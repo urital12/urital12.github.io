@@ -26,10 +26,28 @@
 </head>
 <body class="container">
 
-    <header class="text-center mb-5" style="height: 200px; overflow: hidden;">
-        <img src="images/logo_header.png"
+    <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm sticky-top">
+        <div class="container">
+        <a class="navbar-brand" href="#"><img src="images/logo_header_horiz.png" alt="Logo" height="48"></a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarMenu">
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+              <li class="nav-item"><a class="nav-link" href="#classes">Classes</a></li>
+              <li class="nav-item"><a class="nav-link" href="#registration">Register</a></li>
+              <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+              <li class="nav-item"><a class="nav-link" href="#gallery">Gallery</a></li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+    <header class="text-center mb-5" style="height: 220px; overflow: hidden;">
+        <img src="images/logo_header_horiz.png"
              alt="Thinking Challenges and Math"
-             style="height: 250px; object-fit: cover; object-position: center top;">
+             style="height: 220px; object-fit: cover; object-position: center top;">
     </header>
 
   <!-- <h1 class="text-center mb-5">Thinking Challenges and Math</h1> -->
@@ -55,24 +73,25 @@
   </div>
 
   <section class="mb-5">
-    <div class="row align-items-start">
-      <div class="col-md-4 mb-3 mb-md-0">
-        <img src="images/yael.png" class="img-fluid rounded shadow" alt="Yael, the instructor">
+    <section id="about" class="mb-5">...</section>
+    <div class="row align-items-center">
+      <!-- Profile Photo -->
+      <div class="col-md-4 text-center mb-4 mb-md-0">
+        <img src="images/yael.png" alt="Yael Tal" class="img-fluid rounded-circle shadow" style="max-width: 250px;">
       </div>
+  
+      <!-- Bio Text -->
       <div class="col-md-8">
-        <h2>About Me</h2>
-        <p>I'm a mother of three curious and energetic boys — Ido (19), Elad (17), and Yoav (14) — who constantly inspire my passion for learning and teaching.</p>
+        <h2 class="mb-3">About Me</h2>
+        <p>I'm Yael Tal, a passionate educator and mother of three curious boys. I’ve been teaching math and statistics for over 25 years—guiding students from all ages and levels through meaningful and creative learning experiences.</p>
   
-        <p>I hold an M.Sc. in Mathematics and Statistics and have spent the past 25 years teaching math and statistics to both children and adults. My experience ranges from private instruction to advanced enrichment, including teaching Math Olympiad classes and coaching teams for the Silicon Valley Math Tournament.</p>
+        <p>In addition to teaching Math Olympiad and coaching competitive teams, I created and continue to teach <strong>Thinking Challenges and Math</strong>—a hands-on, puzzle-based course that sparks critical thinking through visualizations, games, and magical math moments.</p>
   
-        <p>12 years ago, I designed and launched a unique course called <strong>Thinking Challenges and Math</strong>, which I continue to teach today. This class fosters creative thinking through visualizations, math magic, logic games, and surprising problem-solving exercises that challenge students’ intuition and highlight common mathematical misconceptions.</p>
-  
-        <p>I'm deeply committed to creating engaging, thought-provoking lessons that make math meaningful and fun. Teaching is not just my profession — it’s my passion.</p>
+        <p>For me, teaching isn’t just a job—it’s a creative mission to help students enjoy the beauty of thinking and problem-solving.</p>
       </div>
     </div>
   </section>
   
-
   <section class="mb-5">
     <div class="row g-3">
       <div class="col-12 col-sm-6 col-md-4">
@@ -88,35 +107,193 @@
     </div>
   </section>
 
+
   <section class="mb-5">
-    <div class="card shadow-lg border-0">
-      <div class="card-body">
-        <h2 class="card-title mb-4">The Classes</h2>
-  
-        <p class="card-text">Our classes are designed to spark curiosity through hands-on, discovery-based learning. Students engage with math and science through puzzles, logic games, counterintuitive problems, and experiments that challenge their intuition and inspire creative thinking.</p>
-  
-        <p class="card-text">Math magic and surprising demonstrations bring mathematical ideas to life. These activities naturally lead to inquiry and exploration—students are drawn to investigate and discover patterns, not just memorize rules.</p>
-  
-        <p class="card-text">We build solids using unit cubes and create 3D structures, giving students concrete experience with counting, organizing, measuring, and spatial reasoning—all key problem-solving skills.</p>
-  
-        <p class="card-text">Thinking Challenges fosters a DIY spirit. Students collaborate, ask questions, and drive their own learning in a fun, supportive environment. We emphasize confidence-building and encourage learners to take intellectual risks and explore new challenges.</p>
-  
-        <p class="card-text">Our classes are grouped by ability, not age, allowing every student to be placed at the right challenge level. Whether your child needs enrichment or a boost in confidence, they’ll find a place where they can grow.</p>
-  
-        <p class="card-text">Class level typically matches school grade—but advanced students may be placed higher. For example, a second grader with strong math skills might join a level 3 group. Unsure about placement? You’re welcome to consult Yael directly at <a href="tel:+14084808514">(408) 480-8514</a>.</p>
-  
-        <blockquote class="blockquote mt-4 mb-0">
-          <p>“Math is fun, math is cool — so why do so many people hate it?”</p>
-        </blockquote>
+    <section id="classes" class="mb-5">...</section>
+
+    <h2 class="text-center mb-4">The Classes</h2>
+    <div class="row row-cols-1 row-cols-md-3 g-4 text-center">
+      
+      <div class="col">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <img src="images/hands-on.png" alt="Hands-on learning" style="width: 70px;" class="mb-3">
+            <h5 class="card-title">Hands-On Learning</h5>
+            <p class="card-text small">Puzzles, logic games, and fun experiments make learning math and science an exciting discovery process.</p>
+          </div>
+        </div>
       </div>
+  
+      <div class="col">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <img src="images/magic-wand.png" alt="Math magic" style="width: 60px;" class="mb-3">
+            <h5 class="card-title">Math Magic</h5>
+            <p class="card-text small">Math comes alive with magic tricks and illusions that inspire curiosity and deep questioning.</p>
+          </div>
+        </div>
+      </div>
+  
+      <div class="col">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <img src="images/3d-modeling.png" alt="3D Building" style="width: 60px;" class="mb-3">
+            <h5 class="card-title">3D Thinking</h5>
+            <p class="card-text small">Students explore 3D structures with unit cubes—developing spatial reasoning and problem-solving skills.</p>
+          </div>
+        </div>
+      </div>
+  
+      <div class="col">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <img src="images/collaborate.png" alt="Collaborative learning" style="width: 60px;" class="mb-3">
+            <h5 class="card-title">Collaborative Spirit</h5>
+            <p class="card-text small">Students work together in a creative, supportive environment where ideas and challenges flow freely.</p>
+          </div>
+        </div>
+      </div>
+  
+      <div class="col">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <img src="images/next-level.png" alt="Ability-based levels" style="width: 60px;" class="mb-3">
+            <h5 class="card-title">Level-Based Groups</h5>
+            <p class="card-text small">Students are grouped by ability, not age—ensuring the right challenge level for each learner.</p>
+          </div>
+        </div>
+      </div>
+  
+      <div class="col">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <img src="images/question-mark.png" alt="Contact Yael" style="width: 60px;" class="mb-3">
+            <h5 class="card-title">Questions?</h5>
+            <p class="card-text small">Reach out to Yael at <a href="tel:+14084808514">(408) 480-8514</a> to talk about placement or curriculum.</p>
+          </div>
+        </div>
+      </div>
+  
+    </div>
+  </section>
+  
+  <section class="mb-5">
+    <h2 class="text-center mb-4">What Parents Are Saying</h2>
+    <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
+      
+      <div class="carousel-inner">
+  
+        <div class="carousel-item active">
+          <div class="card mx-auto border-0 shadow-sm" style="max-width: 700px;">
+            <div class="card-body" style="min-height: 160px;">
+              <p class="card-text">"This class made my daughter fall in love with math again! The creative approach really works."</p>
+              <p class="text-end mb-0"><strong>– Sarah G., parent of 4th grader</strong></p>
+            </div>
+          </div>
+        </div>
+  
+        <div class="carousel-item">
+          <div class="card mx-auto border-0 shadow-sm" style="max-width: 700px;">
+            <div class="card-body" style="min-height: 160px;">
+              <p class="card-text">"Yael has a rare gift for helping kids think deeply and have fun doing it. Highly recommended."</p>
+              <p class="text-end mb-0"><strong>– David R., parent of 6th grader</strong></p>
+            </div>
+          </div>
+        </div>
+  
+        <div class="carousel-item">
+          <div class="card mx-auto border-0 shadow-sm" style="max-width: 700px;">
+            <div class="card-body" style="min-height: 160px;">
+              <p class="card-text">"The Thinking Challenges class gave my son so much confidence. He now enjoys solving problems on his own!"</p>
+              <p class="text-end mb-0"><strong>– Lin C., parent of 3rd grader</strong></p>
+            </div>
+          </div>
+        </div>
+  
+      </div>
+  
+      <!-- Controls -->
+      <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+  
     </div>
   </section>
 
     <!-- 📝 Google Form -->
   <section class="mb-5">
+      <section id="registration" class="mb-5">...</section>
+
     <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScAhwgmnxYvVdFduz8AJYLouFpGJ3SKgqYA8wjzSjYevLGj4Q/viewform?embedded=true" width="640" height="2964" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
   </section>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+  <section class="mb-5">
+    <section id="contact" class="mb-5">...</section>
+    
+    <div class="card border-0 shadow-sm p-4">
+      <h2 class="text-center mb-3" style="font-weight: bold;">Contact Us</h2>
+      <hr style="border-top: 2px solid #ccc; width: 60px; margin: 0 auto 20px;">
+  
+      <div class="text-center mb-4">
+        <p class="mb-1" style="font-weight: bold;">Thinking Challenges & Math</p>
+        <p class="mb-1">
+          <a href="mailto:yaeltal77@gmail.com" style="text-decoration: none; color: #333;"><strong>yaeltal77@gmail.com</strong></a>
+        </p>
+        <p class="mb-1">
+          <a href="tel:+14084808514" style="text-decoration: none; color: #333;"><strong>+1.408.480.8514</strong></a>
+        </p>
+        <p class="mb-0" style="color: #555;">Classes are taught in:<br>
+          <strong>Sunnyvale, CA 94087</strong>
+        </p>
+      </div>
+  
+      <form action="https://formspree.io/f/xdkebakk" method="POST" class="row g-3">
+        <div class="col-md-6">
+          <input type="text" name="name" placeholder="Name *" required class="form-control form-control-sm">
+        </div>
+        <div class="col-md-6">
+          <input type="email" name="email" placeholder="Email *" required class="form-control form-control-sm">
+        </div>
+        <div class="col-md-6">
+          <input type="text" name="phone" placeholder="Phone" class="form-control form-control-sm">
+        </div>
+        <div class="col-md-6">
+          <input type="text" name="subject" placeholder="Subject" class="form-control form-control-sm">
+        </div>
+        <div class="col-12">
+          <textarea name="message" placeholder="Message" required class="form-control form-control-sm" style="height: 100px;"></textarea>
+        </div>
+        <div class="col-12 text-end">
+          <button type="submit" class="btn btn-sm" style="background-color: #90c4e4; color: #fff;">Send</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section class="mb-5">
+    <section id="gallery" class="mb-5">...</section>
+
+    <div class="row g-3">
+      <div class="col-12 col-sm-6 col-md-4">
+        <img src="images/photo1.jpg" class="img-fluid rounded shadow-sm" alt="Gallery image">
+      </div>
+      <div class="col-12 col-sm-6 col-md-4">
+        <img src="images/photo2.jpg" class="img-fluid rounded shadow-sm" alt="Gallery image">
+      </div>
+      <div class="col-12 col-sm-6 col-md-4">
+        <img src="images/photo3.jpg" class="img-fluid rounded shadow-sm" alt="Gallery image">
+      </div>
+      <!-- Repeat as needed -->
+    </div>
+  </section>
+
 </body>
 </html>
