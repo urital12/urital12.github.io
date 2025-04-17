@@ -47,6 +47,23 @@
         #carouselExample .carousel-item { height: 280px; }
     }
   </style>
+  <style>
+    .hero-header {                    /* default (desktop / tablet) */
+      height: 220px;
+      overflow: hidden;
+    }
+    .hero-header img {
+      height: 100%;                  /* fill the header box */
+      width: 100%;
+      object-fit: cover;
+      object-position: center top;
+    }
+  
+    /* shrink on small screens */
+    @media (max-width: 576px) {       /* iPhone / most phones */
+      .hero-header { height: 140px; } /* choose any smaller height */
+    }
+  </style>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
   <link rel="icon" href="images/favicon.png" type="image/png">
 </head>
@@ -71,12 +88,10 @@
         </div>
       </nav>
 
-    <header class="text-center mb-5" style="height: 220px; overflow: hidden;" id="home">
-
+      <header id="home" class="hero-header text-center mb-5">
         <img src="images/logo_header_horiz.png"
-             alt="Thinking Challenges and Math"
-             style="height: 220px; object-fit: cover; object-position: center top;">
-    </header>
+             alt="Thinking Challenges and Math">
+      </header>
 
   <!-- <h1 class="text-center mb-5">Thinking Challenges and Math</h1> -->
   <!-- 📸 Carousel -->
