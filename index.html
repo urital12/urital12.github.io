@@ -48,20 +48,20 @@
     }
   </style>
   <style>
-    .hero-header {                    /* default (desktop / tablet) */
+    .hero-header {                 /* desktop / tablet default */
       height: 220px;
       overflow: hidden;
     }
     .hero-header img {
-      height: 100%;                  /* fill the header box */
-      width: 100%;
-      object-fit: cover;
-      object-position: center top;
+      height: 100%;                /* stay 220 px tall */
+      width: auto;                 /* keep original aspect ratio  */
+      max-width: 100%;             /* never spill beyond the screen */
+      object-fit: contain;         /* centre without stretching   */
     }
   
-    /* shrink on small screens */
-    @media (max-width: 576px) {       /* iPhone / most phones */
-      .hero-header { height: 140px; } /* choose any smaller height */
+    /* phone breakpoint */
+    @media (max-width: 576px) {
+      .hero-header { height: 140px; }
     }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
