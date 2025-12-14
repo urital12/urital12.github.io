@@ -3,798 +3,771 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scale Game - Find the Heavy Coin</title>
+    <title>Logic Scale - Find the Heavy Coin</title>
     <style>
-    body {
-        font-family: Arial, sans-serif;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        background-color: #f5f5f5;
-        margin: 0;
-        padding: 20px;
-        min-height: 100vh;
-    }
+        :root {
+            --primary: #4F46E5;
+            --primary-dark: #4338ca;
+            --accent: #F59E0B;
+            --bg: #F3F4F6;
+            --surface: #FFFFFF;
+            --text-main: #1F2937;
+            --text-light: #6B7280;
+            --danger: #EF4444;
+            --success: #10B981;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --scale-metal: #9CA3AF;
+            --scale-base: #374151;
+        }
 
-    .game-controls {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 20px;
-        background-color: #fff;
-        padding: 15px;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
 
-    .game-controls label {
-        font-weight: bold;
-        color: #333;
-    }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-    .game-controls input {
-        width: 60px;
-        padding: 5px 8px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        text-align: center;
-        font-size: 16px;
-    }
-
-    .reset-button {
-        padding: 8px 16px;
-        background-color: #2196F3;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: bold;
-    }
-
-    .reset-button:hover {
-        background-color: #1976D2;
-    }
+        /* Header */
+        header {
+            width: 100%;
+            background: var(--surface);
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
 
         h1 {
-            color: #333;
-            margin-bottom: 30px;
-        }
-
-        .game-container {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--text-main);
             display: flex;
-            align-items: flex-start;
-            gap: 40px;
-            max-width: 1200px;
-        }
-
-        .main-game-area {
-            display: flex;
-            flex-direction: column;
             align-items: center;
+            gap: 10px;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        
+        .btn-outline { background: transparent; border: 1px solid var(--text-light); color: var(--text-main); }
+        .btn-outline:hover { border-color: var(--text-main); background: #f9fafb; }
+
+        input[type="number"] {
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            width: 70px;
+            text-align: center;
+        }
+
+        /* Layout Grid */
+        .app-container {
+            display: grid;
+            grid-template-columns: 300px 1fr 250px;
+            gap: 20px;
+            width: 100%;
+            max-width: 1400px;
+            padding: 20px;
             flex: 1;
-            gap: 20px;
+            height: calc(100vh - 70px);
         }
 
-        .game-controls-row {
+        /* Panel Styles */
+        .panel {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .panel-title {
+            margin-top: 0;
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 700;
+            border-bottom: 2px solid var(--bg);
+            padding-bottom: 0.5rem;
+        }
+
+        /* Coin Repository */
+        .coin-repository {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-content: flex-start;
+            min-height: 200px;
+        }
+
+        /* The Coin */
+        .coin {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FFD700 0%, #F59E0B 100%);
+            border: 2px solid #D97706;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.4);
             display: flex;
             align-items: center;
-            gap: 20px;
-        }
-
-        .scale-container {
+            justify-content: center;
+            font-weight: 800;
+            color: #92400E;
+            font-size: 1.1rem;
+            cursor: grab;
             position: relative;
-            display: flex;
-            align-items: center;
-            gap: 80px;
+            z-index: 100;
+            transition: transform 0.1s;
         }
 
-        .scale-side {
-            width: 200px;
-            height: 300px;
-            border: 2px solid #333;
-            border-radius: 10px;
-            background-color: #fff;
+        .coin:hover { transform: scale(1.1); }
+        .coin:active { cursor: grabbing; transform: scale(0.95); }
+        .coin.dragging { opacity: 0.5; }
+
+        /* Main Stage (Scale) */
+        .stage-area {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 10px;
+            justify-content: flex-start;
             position: relative;
-            min-height: 100px;
+            overflow: hidden;
         }
 
-        .scale-side::before {
-            content: '';
+        /* The Scale Mechanics */
+        .scale-wrapper {
+            position: relative;
+            width: 100%;
+            height: 350px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .scale-base {
             position: absolute;
-            bottom: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 4px;
+            bottom: 20px;
+            width: 160px;
             height: 20px;
-            background-color: #333;
+            background: var(--scale-base);
+            border-radius: 4px;
+            z-index: 1;
+        }
+        
+        .scale-pillar {
+            position: absolute;
+            bottom: 40px;
+            width: 16px;
+            height: 180px;
+            background: linear-gradient(to right, #4b5563, #374151);
+            z-index: 1;
         }
 
         .scale-beam {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 400px;
-            height: 4px;
-            background-color: #8B4513;
-            z-index: -1;
+            top: 130px;
+            width: 500px;
+            height: 12px;
+            background: var(--scale-metal);
+            border-radius: 6px;
+            z-index: 2;
+            transition: transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-origin: center;
+            display: flex;
+            justify-content: space-between;
         }
-
-        .scale-beam::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: -10px;
-            width: 4px;
-            height: 24px;
-            background-color: #8B4513;
-        }
-
+        
         .scale-beam::after {
             content: '';
             position: absolute;
-            right: 0;
-            top: -10px;
-            width: 4px;
-            height: 24px;
-            background-color: #8B4513;
-        }
-
-        .scale-side.left {
-            transform: rotate(-2deg);
-        }
-
-        .scale-side.right {
-            transform: rotate(2deg);
-        }
-
-        .scale-container.balanced .scale-side.left,
-        .scale-container.balanced .scale-side.right {
-            transform: rotate(0deg);
-        }
-
-        .scale-container.left-heavier .scale-side.left {
-            transform: rotate(-10deg);
-        }
-
-        .scale-container.right-heavier .scale-side.right {
-            transform: rotate(10deg);
-        }
-
-        .coin {
-            width: 40px;
-            height: 40px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            background: #D1D5DB;
             border-radius: 50%;
-            background: linear-gradient(145deg, #FFD700, #FFA500);
-            border: 2px solid #B8860B;
-            cursor: grab;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: #8B4513;
-            user-select: none;
-            margin: 5px;
-            position: relative;
+            border: 2px solid #374151;
         }
 
-        .coin:hover {
-            transform: scale(1.05);
-        }
-
-        .coin:active {
-            cursor: grabbing;
-        }
-
-        .coin.heavy {
-            background: linear-gradient(145deg, #FFD700, #FFA500);
-        }
-
-        .coin.dragging {
-            opacity: 0.5;
-            transform: rotate(5deg);
-        }
-
-        .coins-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            justify-content: center;
-            max-width: 350px;
-        }
-
-        .weigh-button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 20px;
-        }
-
-        .weigh-button:hover {
-            background-color: #45a049;
-        }
-
-        .weigh-button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-
-        .empty-button {
-            padding: 10px 20px;
-            background-color: #FF9800;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 20px;
-        }
-
-        .empty-button:hover {
-            background-color: #F57C00;
-        }
-
-        .empty-button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-
-        .weighing-counter {
-            margin-top: 10px;
-            font-weight: bold;
-            color: #333;
-            font-size: 16px;
-        }
-
-        .result {
-            margin-top: 20px;
-            padding: 10px;
-            border-radius: 5px;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        .balanced {
-            background-color: #e8f5e8;
-            color: #2e7d32;
-            border: 1px solid #4caf50;
-        }
-
-        .left-heavier {
-            background-color: #ffebee;
-            color: #c62828;
-            border: 1px solid #f44336;
-        }
-
-        .right-heavier {
-            background-color: #fff3e0;
-            color: #ef6c00;
-            border: 1px solid #ff9800;
-        }
-
-        .instructions {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            max-width: 600px;
-            text-align: center;
-        }
-
-        .instructions h2 {
-            margin-top: 0;
-            color: #333;
-        }
-
-        .instructions p {
-            margin: 10px 0;
-            line-height: 1.5;
-        }
-
-        .guess-section {
+        .pan-assembly {
+            position: absolute;
+            top: 136px;
+            width: 140px;
+            height: 200px;
+            transition: top 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 3;
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 250px;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        .guess-section h3 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 18px;
-        }
+        .pan-assembly.left { left: calc(50% - 250px - 70px); }
+        .pan-assembly.right { right: calc(50% - 250px - 70px); }
 
-        .guess-section p {
-            margin: 0 0 20px 0;
-            text-align: center;
-            font-size: 14px;
-            color: #666;
-        }
-
-        .guess-basket {
-            width: 140px;
+        .chain-left, .chain-right {
+            width: 2px;
             height: 100px;
-            border: 2px dashed #666;
-            border-radius: 10px;
+            background: #9CA3AF;
+            position: absolute;
+            top: 0;
+        }
+        .chain-left { left: 20px; transform: rotate(-10deg); transform-origin: top; }
+        .chain-right { right: 20px; transform: rotate(10deg); transform-origin: top; }
+
+        .pan-plate {
+            margin-top: 95px;
+            width: 140px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid var(--scale-metal);
+            border-radius: 0 0 70px 70px;
+            box-shadow: inset 0 -5px 10px rgba(0,0,0,0.05);
             display: flex;
-            align-items: center;
             justify-content: center;
-            background-color: #f9f9f9;
+            align-items: flex-end;
+            padding-bottom: 10px;
+            flex-wrap: wrap;
+            align-content: flex-end;
             position: relative;
-            transition: background-color 0.3s;
+            transition: background 0.3s;
         }
 
-        .guess-basket:hover {
-            background-color: #f0f0f0;
-        }
-
-        .guess-basket.has-coin {
-            background-color: #fff;
-            border-style: solid;
-        }
-
-        .basket-label {
-            color: #666;
-            font-size: 14px;
+        .pan-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 2px;
+            width: 100%;
+            height: 100%;
             pointer-events: none;
         }
+        .pan-content .coin {
+            pointer-events: auto;
+            transform: scale(0.8);
+            margin: 0;
+        }
 
-        .guess-feedback {
-            margin-top: 15px;
-            padding: 10px 20px;
-            border-radius: 5px;
+        .scale-result {
+            margin-top: 20px;
+            font-size: 1.2rem;
             font-weight: bold;
+            height: 1.5rem;
+            text-align: center;
+            color: var(--text-main);
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn-large {
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 6px rgba(79, 70, 229, 0.3);
+        }
+
+        .history-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            padding: 10px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+        
+        .history-item:last-child { border-bottom: none; }
+        
+        .history-icon {
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        .res-balanced { color: var(--success); background: #ecfdf5; }
+        .res-left { color: var(--danger); background: #fef2f2; }
+        .res-right { color: var(--danger); background: #fef2f2; }
+
+        .guess-zone {
+            margin-top: 20px;
+            padding: 20px;
+            background: #fffbeb;
+            border: 2px dashed #fcd34d;
+            border-radius: 8px;
+            text-align: center;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .guess-zone.has-coin {
+            border-style: solid;
+            background: #fff;
+        }
+
+        .guess-zone p { margin: 0 0 10px 0; color: #92400e; font-size: 0.9rem;}
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
 
-        .guess-feedback.correct {
-            background-color: #e8f5e8;
-            color: #2e7d32;
-            border: 1px solid #4caf50;
+        .modal-content h2 { color: var(--primary); margin-top: 0; }
+        .modal-content p { line-height: 1.6; color: var(--text-light); text-align: left;}
+        .instructions-list { text-align: left; margin-bottom: 2rem; }
+        .instructions-list li { margin-bottom: 0.5rem; }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto;
+                height: auto;
+            }
+            .scale-beam { width: 300px; }
+            .pan-assembly.left { left: calc(50% - 150px - 70px); }
+            .pan-assembly.right { right: calc(50% - 150px - 70px); }
+            .scale-wrapper { height: 300px; }
         }
 
-        .guess-feedback.incorrect {
-            background-color: #ffebee;
-            color: #c62828;
-            border: 1px solid #f44336;
+        .tipped-left .scale-beam { transform: rotate(-15deg); }
+        .tipped-left .pan-assembly.left { top: 180px; }
+        .tipped-left .pan-assembly.right { top: 80px; }
+
+        .tipped-right .scale-beam { transform: rotate(15deg); }
+        .tipped-right .pan-assembly.right { top: 180px; }
+        .tipped-right .pan-assembly.left { top: 80px; }
+
+        .wobble { animation: beamWobble 0.8s ease-in-out; }
+
+        @keyframes beamWobble {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            50% { transform: rotate(3deg); }
+            75% { transform: rotate(-2deg); }
+            100% { transform: rotate(0deg); }
         }
     </style>
 </head>
 <body>
-    <h1>Scale Game - Find the Heavy Coin</h1>
 
-    <div class="game-controls">
-        <label for="coin-count">Number of coins:</label>
-        <input type="number" id="coin-count" value="9" min="3" max="50">
-        <button id="reset-button" class="reset-button">Reset Game</button>
+    <!-- Instructions Modal -->
+    <div class="modal-overlay" id="introModal">
+        <div class="modal-content">
+            <h2>Find the Heavy Coin</h2>
+            <p>A logic puzzle game.</p>
+            <ul class="instructions-list">
+                <li>You have a pile of identical coins.</li>
+                <li><strong>One coin is heavier</strong> than the rest.</li>
+                <li>Drag coins onto the scale pans to weigh them.</li>
+                <li>Analyze the results to deduce the heavy coin.</li>
+                <li>Drag the suspect coin to the <strong>Yellow Box</strong> to verify.</li>
+                <li>Try to find it in the fewest weighings possible!</li>
+            </ul>
+            <button class="btn btn-primary btn-large" onclick="closeModal()">Start Playing</button>
+        </div>
     </div>
 
-    <div class="instructions">
-        <h2>How to Play</h2>
-        <p>One of the coins is heavier than the others (but they look identical). Your goal is to find the heavy coin by weighing them on the scale.</p>
-        <p>Drag coins to either side of the scale, then click "Weigh" to see which side is heavier or if they're balanced.</p>
-        <p>Once you think you've found the heavy coin, drag it to the basket below for verification!</p>
-        <p>Use the controls above to change the number of coins and reset the game.</p>
-    </div>
+    <header>
+        <h1>⚖️ Logic Scale</h1>
+        <div class="header-controls">
+            <label>Coins:</label>
+            <input type="number" id="coinCountInput" value="9" min="3" max="30">
+            <button class="btn btn-primary" onclick="initGame()">New Game</button>
+            <button class="btn btn-outline" onclick="openModal()">?</button>
+        </div>
+    </header>
 
-    <div class="game-container">
-        <div class="main-game-area">
-            <div class="scale-container">
-                <div class="scale-beam"></div>
-                <div class="scale-side left" id="left-side">
-                    <h3>Left Side</h3>
-                </div>
-                <div class="scale-side right" id="right-side">
-                    <h3>Right Side</h3>
-                </div>
-            </div>
-
-            <div class="coins-container" id="coins-container">
-                <!-- Coins will be generated by JavaScript -->
-            </div>
-
-            <div class="game-controls-row">
-                <button class="weigh-button" id="weigh-button">Weigh</button>
-                <button class="empty-button" id="empty-button">Empty Scales</button>
-                <div class="weighing-counter" id="weighing-counter">Weighings: 0</div>
-            </div>
-
-            <div class="result" id="result" style="display: none;"></div>
+    <div class="app-container">
+        
+        <!-- Left Panel: Repository -->
+        <div class="panel">
+            <h3 class="panel-title">Coin Bank</h3>
+            <div class="coin-repository" id="repository" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
         </div>
 
-        <div class="guess-section">
-            <h3>Guess the Heavy Coin</h3>
-            <p>Drag the coin you think is heavier into the basket:</p>
-            <div class="guess-basket" id="guess-basket">
-                <div class="basket-label">Drop coin here</div>
+        <!-- Center Panel: The Game -->
+        <div class="panel stage-area">
+            <div class="scale-result" id="scaleResultText">Ready to weigh</div>
+
+            <div class="scale-wrapper" id="scaleSystem">
+                <div class="scale-pillar"></div>
+                <div class="scale-base"></div>
+                <div class="scale-beam" id="scaleBeam"></div>
+
+                <div class="pan-assembly left" id="leftPanAssembly">
+                    <div class="chain-left"></div>
+                    <div class="chain-right"></div>
+                    <div class="pan-plate" id="leftPan" ondrop="drop(event)" ondragover="allowDrop(event)">
+                        <div class="pan-content"></div>
+                    </div>
+                </div>
+
+                <div class="pan-assembly right" id="rightPanAssembly">
+                    <div class="chain-left"></div>
+                    <div class="chain-right"></div>
+                    <div class="pan-plate" id="rightPan" ondrop="drop(event)" ondragover="allowDrop(event)">
+                        <div class="pan-content"></div>
+                    </div>
+                </div>
             </div>
-            <div class="guess-feedback" id="guess-feedback" style="display: none;"></div>
+
+            <div class="action-bar">
+                <button class="btn btn-outline" onclick="resetScales()">Reset Scales</button>
+                <button class="btn btn-primary btn-large" id="weighBtn" onclick="weighCoins()">Weigh Now</button>
+            </div>
+        </div>
+
+        <!-- Right Panel: History & Guess -->
+        <div class="panel">
+            <h3 class="panel-title">History</h3>
+            <ul class="history-list" id="historyList"></ul>
+
+            <div class="guess-zone" id="guessZone" ondrop="dropGuess(event)" ondragover="allowDrop(event)">
+                <p><strong>Solution</strong></p>
+                <p>Drag the heavy coin here</p>
+            </div>
         </div>
     </div>
 
     <script>
-        class ScaleGame {
-            constructor(coinCount = 9) {
-                this.coinCount = coinCount;
-                this.coins = [];
-                this.heavyCoinIndex = Math.floor(Math.random() * coinCount);
-                this.leftSide = [];
-                this.rightSide = [];
-                this.guessedCoin = null;
-                this.dragElement = null;
-                this.weighingCount = 0;
+        // --- Functions defined before usage ---
+        
+        function openModal() { document.getElementById('introModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('introModal').style.display = 'none'; }
 
-                this.init();
-            }
+        // Game State
+        let totalCoins = 9;
+        let heavyCoinIndex = -1;
+        let weighingsCount = 0;
+        let isWeighing = false;
+        let draggedItem = null;
 
-            init() {
-                this.createCoins();
-                this.setupEventListeners();
-                this.resetScaleDisplay();
-            }
+        // Audio Context (Safe initialization)
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
 
-            reset(coinCount = null) {
-                // Clear existing coins
-                const coinsContainer = document.getElementById('coins-container');
-                coinsContainer.innerHTML = '';
+        function playTone(freq, type, duration) {
+            if (!audioCtx) audioCtx = new AudioContext();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.value = freq;
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+            osc.stop(audioCtx.currentTime + duration);
+        }
 
-                // Clear scale sides
-                document.getElementById('left-side').innerHTML = '<h3>Left Side</h3>';
-                document.getElementById('right-side').innerHTML = '<h3>Right Side</h3>';
+        // --- Initialization ---
 
-                // Clear basket
-                const basket = document.getElementById('guess-basket');
-                const existingCoin = basket.querySelector('.coin');
-                if (existingCoin) {
-                    basket.removeChild(existingCoin);
-                }
-                basket.classList.remove('has-coin');
-                const label = basket.querySelector('.basket-label');
-                if (label) label.style.display = 'block';
+        document.addEventListener('DOMContentLoaded', () => {
+            initGame();
+        });
 
-                // Update coin count if provided
-                if (coinCount !== null) {
-                    this.coinCount = coinCount;
-                }
+        function initGame() {
+            const input = document.getElementById('coinCountInput');
+            let val = parseInt(input.value);
+            if(val < 3) val = 3; 
+            if(val > 50) val = 50;
+            totalCoins = val;
+            input.value = val;
 
-                // Reset game state
-                this.coins = [];
-                this.heavyCoinIndex = Math.floor(Math.random() * this.coinCount);
-                this.leftSide = [];
-                this.rightSide = [];
-                this.guessedCoin = null;
-                this.weighingCount = 0;
+            // Reset Logic
+            heavyCoinIndex = Math.floor(Math.random() * totalCoins);
+            weighingsCount = 0;
+            
+            // Clear UI
+            document.getElementById('repository').innerHTML = '';
+            document.querySelector('#leftPan .pan-content').innerHTML = '';
+            document.querySelector('#rightPan .pan-content').innerHTML = '';
+            document.getElementById('historyList').innerHTML = '';
+            document.getElementById('scaleResultText').textContent = 'Ready to weigh';
+            document.getElementById('scaleResultText').style.color = 'var(--text-main)';
+            document.querySelector('.btn-primary').style.backgroundColor = ''; // Reset button color
+            
+            resetGuessZone();
+            resetVisualScale();
 
-                // Update display
-                document.getElementById('weighing-counter').textContent = 'Weighings: 0';
-                document.getElementById('guess-feedback').style.display = 'none';
-
-                // Recreate coins
-                this.createCoins();
-                this.resetScaleDisplay();
-                this.updateWeighButton();
-            }
-
-            createCoins() {
-                const coinsContainer = document.getElementById('coins-container');
-
-                for (let i = 0; i < this.coinCount; i++) {
-                    const coin = document.createElement('div');
-                    coin.className = 'coin';
-                    coin.textContent = i + 1;
-                    coin.dataset.index = i;
-                    coin.draggable = true;
-
-                    if (i === this.heavyCoinIndex) {
-                        coin.dataset.heavy = true;
-                    }
-
-                    coinsContainer.appendChild(coin);
-                    this.coins.push(coin);
-                }
-            }
-
-            setupEventListeners() {
-                // Drag and drop for coins
-                document.addEventListener('dragstart', (e) => {
-                    if (e.target.classList.contains('coin')) {
-                        this.dragElement = e.target;
-                        e.target.classList.add('dragging');
-                        e.dataTransfer.effectAllowed = 'move';
-                    }
-                });
-
-                document.addEventListener('dragend', (e) => {
-                    if (e.target.classList.contains('coin')) {
-                        e.target.classList.remove('dragging');
-                        this.dragElement = null;
-                    }
-                });
-
-                // Drop zones
-                document.getElementById('left-side').addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    e.dataTransfer.dropEffect = 'move';
-                });
-
-                document.getElementById('right-side').addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    e.dataTransfer.dropEffect = 'move';
-                });
-
-                document.getElementById('coins-container').addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    e.dataTransfer.dropEffect = 'move';
-                });
-
-                document.getElementById('left-side').addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    this.moveCoinToSide(this.dragElement, 'left');
-                });
-
-                document.getElementById('right-side').addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    this.moveCoinToSide(this.dragElement, 'right');
-                });
-
-                document.getElementById('coins-container').addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    this.moveCoinToRepository(this.dragElement);
-                });
-
-                // Guess basket drop zone
-                document.getElementById('guess-basket').addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    e.dataTransfer.dropEffect = 'move';
-                });
-
-                document.getElementById('guess-basket').addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    this.guessHeavyCoin(this.dragElement);
-                });
-
-                // Weigh button
-                document.getElementById('weigh-button').addEventListener('click', () => {
-                    this.weighCoins();
-                });
-
-                // Empty scales button
-                document.getElementById('empty-button').addEventListener('click', () => {
-                    this.emptyScales();
-                });
-            }
-
-            moveCoinToSide(coinElement, side) {
-                if (!coinElement) return;
-
-                // Remove from current location
-                this.removeCoinFromCurrentLocation(coinElement);
-
-                // Add to new side
-                const sideContainer = document.getElementById(`${side}-side`);
-                sideContainer.appendChild(coinElement);
-
-                if (side === 'left') {
-                    this.leftSide.push(parseInt(coinElement.dataset.index));
-                } else {
-                    this.rightSide.push(parseInt(coinElement.dataset.index));
-                }
-
-                this.updateWeighButton();
-                this.resetScaleDisplay();
-            }
-
-            moveCoinToRepository(coinElement) {
-                if (!coinElement) return;
-
-                // Remove from current location
-                this.removeCoinFromCurrentLocation(coinElement);
-
-                // Add back to coins container
-                const coinsContainer = document.getElementById('coins-container');
-                coinsContainer.appendChild(coinElement);
-
-                this.updateWeighButton();
-                this.resetScaleDisplay();
-            }
-
-            guessHeavyCoin(coinElement) {
-                if (!coinElement) return;
-
-                // Remove from current location
-                this.removeCoinFromCurrentLocation(coinElement);
-
-                // If there's already a guessed coin, move it back to repository first
-                if (this.guessedCoin) {
-                    const basket = document.getElementById('guess-basket');
-                    basket.removeChild(this.guessedCoin);
-                    document.getElementById('coins-container').appendChild(this.guessedCoin);
-                }
-
-                // Add to basket
-                const basket = document.getElementById('guess-basket');
-                basket.appendChild(coinElement);
-                this.guessedCoin = coinElement;
-
-                // Update basket appearance
-                basket.classList.add('has-coin');
-                const label = basket.querySelector('.basket-label');
-                if (label) label.style.display = 'none';
-
-                // Check if correct and show feedback
-                this.checkGuess();
-
-                this.updateWeighButton();
-                this.resetScaleDisplay();
-            }
-
-            checkGuess() {
-                const feedbackDiv = document.getElementById('guess-feedback');
-                const coinIndex = parseInt(this.guessedCoin.dataset.index);
-
-                if (coinIndex === this.heavyCoinIndex) {
-                    feedbackDiv.textContent = `Correct! Coin ${coinIndex + 1} is indeed the heavy coin! 🎉`;
-                    feedbackDiv.className = 'guess-feedback correct';
-                } else {
-                    feedbackDiv.textContent = `Incorrect. Coin ${coinIndex + 1} is not the heavy coin. The heavy coin is Coin ${this.heavyCoinIndex + 1}.`;
-                    feedbackDiv.className = 'guess-feedback incorrect';
-                }
-
-                feedbackDiv.style.display = 'block';
-            }
-
-            removeCoinFromCurrentLocation(coinElement) {
-                const index = parseInt(coinElement.dataset.index);
-
-                // Remove from arrays
-                this.leftSide = this.leftSide.filter(i => i !== index);
-                this.rightSide = this.rightSide.filter(i => i !== index);
-
-                // If coin is in a side container, coins container, or guess basket, remove it
-                const leftSide = document.getElementById('left-side');
-                const rightSide = document.getElementById('right-side');
-                const coinsContainer = document.getElementById('coins-container');
-                const guessBasket = document.getElementById('guess-basket');
-
-                if (leftSide.contains(coinElement)) {
-                    leftSide.removeChild(coinElement);
-                } else if (rightSide.contains(coinElement)) {
-                    rightSide.removeChild(coinElement);
-                } else if (coinsContainer.contains(coinElement)) {
-                    coinsContainer.removeChild(coinElement);
-                } else if (guessBasket.contains(coinElement)) {
-                    guessBasket.removeChild(coinElement);
-                    this.guessedCoin = null;
-                    // Reset basket appearance
-                    guessBasket.classList.remove('has-coin');
-                    const label = guessBasket.querySelector('.basket-label');
-                    if (label) label.style.display = 'block';
-                    // Hide feedback
-                    document.getElementById('guess-feedback').style.display = 'none';
-                }
-            }
-
-            updateWeighButton() {
-                const weighButton = document.getElementById('weigh-button');
-                const emptyButton = document.getElementById('empty-button');
-                const hasCoins = this.leftSide.length > 0 || this.rightSide.length > 0;
-                weighButton.disabled = !hasCoins;
-                emptyButton.disabled = !hasCoins;
-            }
-
-            weighCoins() {
-                // Increment weighing counter
-                this.weighingCount++;
-                document.getElementById('weighing-counter').textContent = `Weighings: ${this.weighingCount}`;
-
-                const leftWeight = this.calculateWeight(this.leftSide);
-                const rightWeight = this.calculateWeight(this.rightSide);
-
-                const scaleContainer = document.querySelector('.scale-container');
-                const resultDiv = document.getElementById('result');
-
-                scaleContainer.classList.remove('left-heavier', 'right-heavier', 'balanced');
-
-                if (leftWeight > rightWeight) {
-                    scaleContainer.classList.add('left-heavier');
-                    resultDiv.textContent = 'Left side is heavier!';
-                    resultDiv.className = 'result left-heavier';
-                } else if (rightWeight > leftWeight) {
-                    scaleContainer.classList.add('right-heavier');
-                    resultDiv.textContent = 'Right side is heavier!';
-                    resultDiv.className = 'result right-heavier';
-                } else {
-                    scaleContainer.classList.add('balanced');
-                    resultDiv.textContent = 'Both sides are balanced!';
-                    resultDiv.className = 'result balanced';
-                }
-
-                resultDiv.style.display = 'block';
-
-                // No congratulation for single coin weighing
-            }
-
-            calculateWeight(coinIndices) {
-                let weight = 0;
-                coinIndices.forEach(index => {
-                    weight += this.coins[index].dataset.heavy ? 1.1 : 1;
-                });
-                return weight;
-            }
-
-            resetScaleDisplay() {
-                const scaleContainer = document.querySelector('.scale-container');
-                const resultDiv = document.getElementById('result');
-
-                scaleContainer.classList.remove('left-heavier', 'right-heavier');
-                scaleContainer.classList.add('balanced');
-                resultDiv.style.display = 'none';
-            }
-
-            emptyScales() {
-                const leftSide = document.getElementById('left-side');
-                const rightSide = document.getElementById('right-side');
-                const coinsContainer = document.getElementById('coins-container');
-
-                // Move all coins from left side back to repository
-                const leftCoins = Array.from(leftSide.querySelectorAll('.coin'));
-                leftCoins.forEach(coin => {
-                    this.removeCoinFromCurrentLocation(coin);
-                    coinsContainer.appendChild(coin);
-                });
-
-                // Move all coins from right side back to repository
-                const rightCoins = Array.from(rightSide.querySelectorAll('.coin'));
-                rightCoins.forEach(coin => {
-                    this.removeCoinFromCurrentLocation(coin);
-                    coinsContainer.appendChild(coin);
-                });
-
-                this.resetScaleDisplay();
-                this.updateWeighButton();
+            // Generate Coins
+            const repo = document.getElementById('repository');
+            for (let i = 1; i <= totalCoins; i++) {
+                const coin = document.createElement('div');
+                coin.classList.add('coin');
+                coin.textContent = i;
+                coin.draggable = true;
+                coin.id = `coin-${i}`;
+                coin.setAttribute('data-index', i-1); 
+                
+                coin.addEventListener('dragstart', dragStart);
+                coin.addEventListener('dragend', dragEnd);
+                
+                repo.appendChild(coin);
             }
         }
 
-        // Initialize the game when the page loads
-        let game;
-        document.addEventListener('DOMContentLoaded', () => {
-            const coinCountInput = document.getElementById('coin-count');
-            const resetButton = document.getElementById('reset-button');
+        function resetGuessZone() {
+            const zone = document.getElementById('guessZone');
+            zone.innerHTML = `<p><strong>Solution</strong></p><p>Drag the heavy coin here</p>`;
+            zone.classList.remove('has-coin');
+            zone.style.background = '#fffbeb';
+            zone.style.borderColor = '#fcd34d';
+        }
 
-            // Initialize with default coin count
-            game = new ScaleGame(parseInt(coinCountInput.value));
+        function resetVisualScale() {
+            const wrapper = document.getElementById('scaleSystem');
+            wrapper.classList.remove('tipped-left', 'tipped-right');
+            document.getElementById('scaleBeam').classList.remove('wobble');
+        }
 
-            // Reset button handler
-            resetButton.addEventListener('click', () => {
-                const newCoinCount = parseInt(coinCountInput.value);
-                if (newCoinCount >= 3 && newCoinCount <= 50) {
-                    game.reset(newCoinCount);
+        // --- Drag & Drop Logic ---
+
+        function dragStart(e) {
+            draggedItem = this;
+            setTimeout(() => this.classList.add('dragging'), 0);
+            e.dataTransfer.effectAllowed = "move";
+        }
+
+        function dragEnd() {
+            this.classList.remove('dragging');
+            draggedItem = null;
+            
+            const guessZone = document.getElementById('guessZone');
+            if(!guessZone.contains(this) && guessZone.classList.contains('has-coin')) {
+               if(guessZone.querySelectorAll('.coin').length === 0) {
+                   resetGuessZone();
+               }
+            }
+        }
+
+        function allowDrop(e) {
+            e.preventDefault();
+        }
+
+        function drop(e) {
+            e.preventDefault();
+            if(!draggedItem) return;
+
+            let target = e.target;
+            
+            if (target.classList.contains('pan-content')) {
+                target.appendChild(draggedItem);
+                resetVisualScale();
+            } 
+            else if (target.closest('.pan-plate')) {
+                target.closest('.pan-plate').querySelector('.pan-content').appendChild(draggedItem);
+                resetVisualScale();
+            }
+            else if (target.id === 'repository' || target.closest('.coin-repository')) {
+                document.getElementById('repository').appendChild(draggedItem);
+                resetVisualScale();
+            }
+        }
+
+        function dropGuess(e) {
+            e.preventDefault();
+            const zone = document.getElementById('guessZone');
+            
+            const existing = zone.querySelector('.coin');
+            if(existing) {
+                document.getElementById('repository').appendChild(existing);
+            }
+
+            zone.innerHTML = ''; 
+            zone.appendChild(draggedItem);
+            zone.classList.add('has-coin');
+
+            checkWin(draggedItem);
+        }
+
+        // --- Weighing Logic ---
+
+        function weighCoins() {
+            if(isWeighing) return;
+            
+            const leftContainer = document.querySelector('#leftPan .pan-content');
+            const rightContainer = document.querySelector('#rightPan .pan-content');
+            
+            const leftCoins = Array.from(leftContainer.children);
+            const rightCoins = Array.from(rightContainer.children);
+
+            if(leftCoins.length === 0 && rightCoins.length === 0) {
+                alert("Place coins on the pans first!");
+                return;
+            }
+
+            isWeighing = true;
+            weighingsCount++;
+
+            let leftWeight = leftCoins.reduce((sum, coin) => {
+                return sum + (parseInt(coin.getAttribute('data-index')) === heavyCoinIndex ? 2 : 1);
+            }, 0);
+
+            let rightWeight = rightCoins.reduce((sum, coin) => {
+                return sum + (parseInt(coin.getAttribute('data-index')) === heavyCoinIndex ? 2 : 1);
+            }, 0);
+
+            const scaleSystem = document.getElementById('scaleSystem');
+            const resultText = document.getElementById('scaleResultText');
+            
+            document.getElementById('scaleBeam').classList.add('wobble');
+            playTone(200, 'sine', 0.1);
+
+            setTimeout(() => {
+                let result = "Balanced";
+                let resultClass = "res-balanced";
+
+                if (leftWeight > rightWeight) {
+                    scaleSystem.classList.add('tipped-left');
+                    result = "Left is Heavier";
+                    resultClass = "res-left";
+                } else if (rightWeight > leftWeight) {
+                    scaleSystem.classList.add('tipped-right');
+                    result = "Right is Heavier";
+                    resultClass = "res-right";
                 } else {
-                    alert('Please enter a number between 3 and 50');
-                    coinCountInput.value = game.coinCount;
+                    result = "Balanced";
                 }
-            });
 
-            // Allow pressing Enter in input to reset
-            coinCountInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    resetButton.click();
-                }
-            });
-        });
+                resultText.textContent = result;
+                playTone(leftWeight === rightWeight ? 440 : 300, 'sine', 0.3);
+
+                addToHistory(leftCoins, rightCoins, result, resultClass);
+                
+                isWeighing = false;
+                document.getElementById('scaleBeam').classList.remove('wobble');
+
+            }, 800);
+        }
+
+        function resetScales() {
+            const repo = document.getElementById('repository');
+            const leftContent = document.querySelector('#leftPan .pan-content');
+            const rightContent = document.querySelector('#rightPan .pan-content');
+
+            while(leftContent.firstChild) repo.appendChild(leftContent.firstChild);
+            while(rightContent.firstChild) repo.appendChild(rightContent.firstChild);
+
+            resetVisualScale();
+            document.getElementById('scaleResultText').textContent = "Ready to weigh";
+        }
+
+        function addToHistory(leftArr, rightArr, result, cssClass) {
+            const list = document.getElementById('historyList');
+            const li = document.createElement('li');
+            li.className = 'history-item';
+            
+            const leftNums = leftArr.map(c => c.textContent).join(', ');
+            const rightNums = rightArr.map(c => c.textContent).join(', ');
+            
+            li.innerHTML = `
+                <span>L: [${leftNums}] vs R: [${rightNums}]</span>
+                <span class="history-icon ${cssClass}">${result}</span>
+            `;
+            
+            list.prepend(li);
+        }
+
+        function checkWin(coinElement) {
+            const index = parseInt(coinElement.getAttribute('data-index'));
+            const zone = document.getElementById('guessZone');
+            
+            if (index === heavyCoinIndex) {
+                // Win
+                playTone(600, 'square', 0.1);
+                setTimeout(() => playTone(800, 'square', 0.2), 100);
+                
+                zone.style.background = '#dcfce7'; 
+                zone.style.borderColor = '#22c55e';
+                
+                const msg = document.createElement('div');
+                msg.style.marginTop = '10px';
+                msg.innerHTML = `<strong style="color:var(--success)">Correct!</strong><br>Found in ${weighingsCount} weighings.`;
+                zone.appendChild(msg);
+                
+                // Fixed the syntax error here
+                document.querySelector('.btn-primary').style.backgroundColor = 'var(--success)';
+            } else {
+                // Fail
+                playTone(150, 'sawtooth', 0.4);
+                
+                zone.style.background = '#fee2e2'; 
+                zone.style.borderColor = '#ef4444';
+                
+                const msg = document.createElement('div');
+                msg.style.marginTop = '10px';
+                msg.innerHTML = `<strong style="color:var(--danger)">Incorrect!</strong><br>This is a normal coin.`;
+                zone.appendChild(msg);
+            }
+        }
     </script>
 </body>
 </html>
