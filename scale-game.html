@@ -5,15 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scale Game - Find the Heavy Coin</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-color: #f5f5f5;
-            margin: 0;
-            padding: 20px;
-        }
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 20px;
+        min-height: 100vh;
+    }
+
+    .game-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+        background-color: #fff;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .game-controls label {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .game-controls input {
+        width: 60px;
+        padding: 5px 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        text-align: center;
+        font-size: 16px;
+    }
+
+    .reset-button {
+        padding: 8px 16px;
+        background-color: #2196F3;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .reset-button:hover {
+        background-color: #1976D2;
+    }
 
         h1 {
             color: #333;
@@ -22,16 +63,30 @@
 
         .game-container {
             display: flex;
+            align-items: flex-start;
+            gap: 40px;
+            max-width: 1200px;
+        }
+
+        .main-game-area {
+            display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 40px;
+            flex: 1;
+            gap: 20px;
+        }
+
+        .game-controls-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
 
         .scale-container {
             position: relative;
             display: flex;
             align-items: center;
-            gap: 100px;
+            gap: 80px;
         }
 
         .scale-side {
@@ -148,9 +203,9 @@
         .coins-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
             justify-content: center;
-            max-width: 400px;
+            max-width: 350px;
         }
 
         .weigh-button {
@@ -169,6 +224,26 @@
         }
 
         .weigh-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .empty-button {
+            padding: 10px 20px;
+            background-color: #FF9800;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .empty-button:hover {
+            background-color: #F57C00;
+        }
+
+        .empty-button:disabled {
             background-color: #cccccc;
             cursor: not-allowed;
         }
@@ -226,21 +301,34 @@
         }
 
         .guess-section {
-            margin-top: 40px;
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 250px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         .guess-section h3 {
             color: #333;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .guess-section p {
+            margin: 0 0 20px 0;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
         }
 
         .guess-basket {
-            width: 120px;
-            height: 80px;
+            width: 140px;
+            height: 100px;
             border: 2px dashed #666;
             border-radius: 10px;
-            margin: 20px auto;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -288,36 +376,48 @@
 <body>
     <h1>Scale Game - Find the Heavy Coin</h1>
 
+    <div class="game-controls">
+        <label for="coin-count">Number of coins:</label>
+        <input type="number" id="coin-count" value="9" min="3" max="50">
+        <button id="reset-button" class="reset-button">Reset Game</button>
+    </div>
+
     <div class="instructions">
         <h2>How to Play</h2>
-        <p>One of the 9 coins is heavier than the others (but they look identical). Your goal is to find the heavy coin by weighing them on the scale.</p>
+        <p>One of the coins is heavier than the others (but they look identical). Your goal is to find the heavy coin by weighing them on the scale.</p>
         <p>Drag coins to either side of the scale, then click "Weigh" to see which side is heavier or if they're balanced.</p>
         <p>Once you think you've found the heavy coin, drag it to the basket below for verification!</p>
+        <p>Use the controls above to change the number of coins and reset the game.</p>
     </div>
 
     <div class="game-container">
-        <div class="scale-container">
-            <div class="scale-beam"></div>
-            <div class="scale-side left" id="left-side">
-                <h3>Left Side</h3>
+        <div class="main-game-area">
+            <div class="scale-container">
+                <div class="scale-beam"></div>
+                <div class="scale-side left" id="left-side">
+                    <h3>Left Side</h3>
+                </div>
+                <div class="scale-side right" id="right-side">
+                    <h3>Right Side</h3>
+                </div>
             </div>
-            <div class="scale-side right" id="right-side">
-                <h3>Right Side</h3>
+
+            <div class="coins-container" id="coins-container">
+                <!-- Coins will be generated by JavaScript -->
             </div>
+
+            <div class="game-controls-row">
+                <button class="weigh-button" id="weigh-button">Weigh</button>
+                <button class="empty-button" id="empty-button">Empty Scales</button>
+                <div class="weighing-counter" id="weighing-counter">Weighings: 0</div>
+            </div>
+
+            <div class="result" id="result" style="display: none;"></div>
         </div>
-
-        <div class="coins-container" id="coins-container">
-            <!-- Coins will be generated by JavaScript -->
-        </div>
-
-        <button class="weigh-button" id="weigh-button">Weigh</button>
-        <div class="weighing-counter" id="weighing-counter">Weighings: 0</div>
-
-        <div class="result" id="result" style="display: none;"></div>
 
         <div class="guess-section">
             <h3>Guess the Heavy Coin</h3>
-            <p>Drag the coin you think is heavier into the basket below:</p>
+            <p>Drag the coin you think is heavier into the basket:</p>
             <div class="guess-basket" id="guess-basket">
                 <div class="basket-label">Drop coin here</div>
             </div>
@@ -327,9 +427,10 @@
 
     <script>
         class ScaleGame {
-            constructor() {
+            constructor(coinCount = 9) {
+                this.coinCount = coinCount;
                 this.coins = [];
-                this.heavyCoinIndex = Math.floor(Math.random() * 9);
+                this.heavyCoinIndex = Math.floor(Math.random() * coinCount);
                 this.leftSide = [];
                 this.rightSide = [];
                 this.guessedCoin = null;
@@ -342,12 +443,55 @@
             init() {
                 this.createCoins();
                 this.setupEventListeners();
+                this.resetScaleDisplay();
+            }
+
+            reset(coinCount = null) {
+                // Clear existing coins
+                const coinsContainer = document.getElementById('coins-container');
+                coinsContainer.innerHTML = '';
+
+                // Clear scale sides
+                document.getElementById('left-side').innerHTML = '<h3>Left Side</h3>';
+                document.getElementById('right-side').innerHTML = '<h3>Right Side</h3>';
+
+                // Clear basket
+                const basket = document.getElementById('guess-basket');
+                const existingCoin = basket.querySelector('.coin');
+                if (existingCoin) {
+                    basket.removeChild(existingCoin);
+                }
+                basket.classList.remove('has-coin');
+                const label = basket.querySelector('.basket-label');
+                if (label) label.style.display = 'block';
+
+                // Update coin count if provided
+                if (coinCount !== null) {
+                    this.coinCount = coinCount;
+                }
+
+                // Reset game state
+                this.coins = [];
+                this.heavyCoinIndex = Math.floor(Math.random() * this.coinCount);
+                this.leftSide = [];
+                this.rightSide = [];
+                this.guessedCoin = null;
+                this.weighingCount = 0;
+
+                // Update display
+                document.getElementById('weighing-counter').textContent = 'Weighings: 0';
+                document.getElementById('guess-feedback').style.display = 'none';
+
+                // Recreate coins
+                this.createCoins();
+                this.resetScaleDisplay();
+                this.updateWeighButton();
             }
 
             createCoins() {
                 const coinsContainer = document.getElementById('coins-container');
 
-                for (let i = 0; i < 9; i++) {
+                for (let i = 0; i < this.coinCount; i++) {
                     const coin = document.createElement('div');
                     coin.className = 'coin';
                     coin.textContent = i + 1;
@@ -425,6 +569,11 @@
                 // Weigh button
                 document.getElementById('weigh-button').addEventListener('click', () => {
                     this.weighCoins();
+                });
+
+                // Empty scales button
+                document.getElementById('empty-button').addEventListener('click', () => {
+                    this.emptyScales();
                 });
             }
 
@@ -540,8 +689,10 @@
 
             updateWeighButton() {
                 const weighButton = document.getElementById('weigh-button');
+                const emptyButton = document.getElementById('empty-button');
                 const hasCoins = this.leftSide.length > 0 || this.rightSide.length > 0;
                 weighButton.disabled = !hasCoins;
+                emptyButton.disabled = !hasCoins;
             }
 
             weighCoins() {
@@ -592,11 +743,57 @@
                 scaleContainer.classList.add('balanced');
                 resultDiv.style.display = 'none';
             }
+
+            emptyScales() {
+                const leftSide = document.getElementById('left-side');
+                const rightSide = document.getElementById('right-side');
+                const coinsContainer = document.getElementById('coins-container');
+
+                // Move all coins from left side back to repository
+                const leftCoins = Array.from(leftSide.querySelectorAll('.coin'));
+                leftCoins.forEach(coin => {
+                    this.removeCoinFromCurrentLocation(coin);
+                    coinsContainer.appendChild(coin);
+                });
+
+                // Move all coins from right side back to repository
+                const rightCoins = Array.from(rightSide.querySelectorAll('.coin'));
+                rightCoins.forEach(coin => {
+                    this.removeCoinFromCurrentLocation(coin);
+                    coinsContainer.appendChild(coin);
+                });
+
+                this.resetScaleDisplay();
+                this.updateWeighButton();
+            }
         }
 
         // Initialize the game when the page loads
+        let game;
         document.addEventListener('DOMContentLoaded', () => {
-            new ScaleGame();
+            const coinCountInput = document.getElementById('coin-count');
+            const resetButton = document.getElementById('reset-button');
+
+            // Initialize with default coin count
+            game = new ScaleGame(parseInt(coinCountInput.value));
+
+            // Reset button handler
+            resetButton.addEventListener('click', () => {
+                const newCoinCount = parseInt(coinCountInput.value);
+                if (newCoinCount >= 3 && newCoinCount <= 50) {
+                    game.reset(newCoinCount);
+                } else {
+                    alert('Please enter a number between 3 and 50');
+                    coinCountInput.value = game.coinCount;
+                }
+            });
+
+            // Allow pressing Enter in input to reset
+            coinCountInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    resetButton.click();
+                }
+            });
         });
     </script>
 </body>
