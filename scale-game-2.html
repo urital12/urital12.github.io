@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Heavy Coin Logic Game</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Babel for in-browser JSX compilation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f8fafc;
+      }
+      /* Custom scrollbar */
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+    </style>
+
+    <!-- Import Map for React & Icons -->
+    <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.2.0",
+    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+    "lucide-react": "https://esm.sh/lucide-react@0.292.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/"
+  }
+}
+</script>
+  <link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+
+    <!-- Application Code -->
+    <script type="text/babel" data-type="module">
+      import React, { useState, useEffect, useCallback } from 'react';
+      import { createRoot } from 'react-dom/client';
+      import { RefreshCw, Scale as ScaleIcon, Trophy, AlertCircle, History, Trash2, HelpCircle } from 'lucide-react';
+
+      // --- Components ---
+
+      // Coin Component
+      const Coin = ({ id, onDragStart, disabled }) => {
+        return (
+          <div
+            draggable={!disabled}
+            onDragStart={(e) => onDragStart(e, id)}
+            className={`
+              relative w-10 h-10 sm:w-12 sm:h-12 rounded-full 
+              bg-gradient-to-b from-amber-300 via-amber-400 to-amber-600 
+              shadow-[0_4px_6px_-1px_rgba(0,0,0,0.3),inset_0_-2px_4px_rgba(0,0,0,0.2),inset_0_2px_4px_rgba(255,255,255,0.4)]
+              border-2 border-amber-700
+              flex items-center justify-center 
+              font-bold text-amber-900 text-sm sm:text-base select-none
+              transition-all duration-200
+              ${disabled ? 'cursor-not-allowed opacity-80' : 'cursor-grab active:cursor-grabbing hover:-translate-y-1 hover:shadow-xl'}
+              group
+            `}
+          >
+            {/* Inner ring for detail */}
+            <div className="absolute inset-1 rounded-full border border-amber-600/30 pointer-events-none"></div>
+            
+            {/* Number */}
+            <span className="drop-shadow-sm z-10">{id}</span>
+            
+            {/* Shine effect */}
+            <div className="absolute top-1 left-2 w-3 h-2 bg-white/40 rounded-full skew-x-12 blur-[1px]"></div>
+          </div>
+        );
+      };
+
+      // DropZone Component
+      const DropZone = ({ onDrop, className, children, active }) => {
+        const [isOver, setIsOver] = useState(false);
+
+        const handleDragOver = (e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          setIsOver(true);
+        };
+
+        const handleDragLeave = () => {
+          setIsOver(false);
+        };
+
+        const handleDrop = (e) => {
+          e.preventDefault();
+          setIsOver(false);
+          onDrop(e);
+        };
+
+        return (
+          <div
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            className={`${className} transition-colors duration-200 ${isOver ? 'bg-blue-50/50 ring-2 ring-blue-400 ring-opacity-50' : ''}`}
+          >
+            {children}
+          </div>
+        );
+      };
+
+      // Main App Component
+      function App() {
+        // Game Configuration
+        const [totalCoins, setTotalCoins] = useState(9);
+        
+        // Game State
+        const [coins, setCoins] = useState([]);
+        const [locations, setLocations] = useState({});
+        const [heavyCoinId, setHeavyCoinId] = useState(-1);
+        const [gameStatus, setGameStatus] = useState('playing'); // 'playing', 'won', 'lost'
+        
+        // Scale Logic
+        const [scaleState, setScaleState] = useState('balanced'); // 'balanced', 'left-heavy', 'right-heavy'
+        const [weighingHistory, setWeighingHistory] = useState([]);
+        const [isWeighing, setIsWeighing] = useState(false);
+        const [message, setMessage] = useState('');
+
+        // Initialization
+        const initializeGame = useCallback((count) => {
+          const newCoins = Array.from({ length: count }, (_, i) => ({
+            id: i + 1,
+            isHeavy: false
+          }));
+          
+          const randomHeavyIndex = Math.floor(Math.random() * count);
+          newCoins[randomHeavyIndex].isHeavy = true;
+          
+          // Initial locations: all in 'bank'
+          const initialLocations = {};
+          newCoins.forEach(c => initialLocations[c.id] = 'bank');
+
+          setCoins(newCoins);
+          setHeavyCoinId(newCoins[randomHeavyIndex].id);
+          setLocations(initialLocations);
+          setGameStatus('playing');
+          setScaleState('balanced');
+          setWeighingHistory([]);
+          setMessage('One coin is heavier. Use the scale to find it!');
+          setIsWeighing(false);
+        }, []);
+
+        // Run init on mount or when count changes manually
+        useEffect(() => {
+          initializeGame(totalCoins);
+        }, [initializeGame, totalCoins]);
+
+        // Drag Handlers
+        const handleDragStart = (e, id) => {
+          if (gameStatus !== 'playing' || isWeighing) {
+            e.preventDefault();
+            return;
+          }
+          e.dataTransfer.setData('coinId', id.toString());
+          e.dataTransfer.effectAllowed = 'move';
+        };
+
+        const handleDrop = (e, targetLocation) => {
+          const id = parseInt(e.dataTransfer.getData('coinId'), 10);
+          if (isNaN(id)) return;
+
+          // Reset scale state if we move coins onto/off the scale to encourage re-weighing
+          if (locations[id] === 'left' || locations[id] === 'right' || targetLocation === 'left' || targetLocation === 'right') {
+             setScaleState('balanced');
+          }
+
+          setLocations(prev => ({
+            ...prev,
+            [id]: targetLocation
+          }));
+
+          // If dropped in guess basket, verify immediately
+          if (targetLocation === 'guess') {
+            verifyGuess(id);
+          }
+        };
+
+        const emptyScales = () => {
+          if (isWeighing) return;
+          setLocations(prev => {
+            const next = { ...prev };
+            coins.forEach(c => {
+              if (next[c.id] === 'left' || next[c.id] === 'right') {
+                next[c.id] = 'bank';
+              }
+            });
+            return next;
+          });
+          setScaleState('balanced');
+        };
+
+        // Logic: Weighing
+        const performWeighing = () => {
+          if (isWeighing || gameStatus !== 'playing') return;
+
+          const leftCoins = coins.filter(c => locations[c.id] === 'left');
+          const rightCoins = coins.filter(c => locations[c.id] === 'right');
+
+          if (leftCoins.length === 0 && rightCoins.length === 0) {
+            setMessage('Place coins on the scale first.');
+            return;
+          }
+
+          setIsWeighing(true);
+          setMessage('Weighing...');
+
+          // Simulate mechanical delay
+          setTimeout(() => {
+            let leftWeight = leftCoins.length; // Base weight 1 per coin
+            let rightWeight = rightCoins.length;
+
+            // Add extra weight for heavy coin
+            if (leftCoins.some(c => c.isHeavy)) leftWeight += 0.5;
+            if (rightCoins.some(c => c.isHeavy)) rightWeight += 0.5;
+
+            let result = 'balanced';
+            if (leftWeight > rightWeight) result = 'left-heavy';
+            if (rightWeight > leftWeight) result = 'right-heavy';
+
+            setScaleState(result);
+            setIsWeighing(false);
+            setMessage(result === 'balanced' ? 'Balanced' : `${result === 'left-heavy' ? 'Left' : 'Right'} side is heavier`);
+
+            setWeighingHistory(prev => [
+              ...prev,
+              {
+                id: prev.length + 1,
+                leftCount: leftCoins.length,
+                rightCount: rightCoins.length,
+                result
+              }
+            ]);
+          }, 800);
+        };
+
+        // Logic: Verify Guess
+        const verifyGuess = (coinId) => {
+          if (coinId === heavyCoinId) {
+            setGameStatus('won');
+            setMessage('Correct! You found the heavy coin!');
+          } else {
+            setGameStatus('lost');
+            setMessage(`Incorrect! Coin ${coinId} is normal. The heavy coin was ${heavyCoinId}.`);
+          }
+        };
+
+        // Helper to filter coins by location
+        const getCoinsAt = (loc) => coins.filter(c => locations[c.id] === loc);
+
+        return (
+          <div className="min-h-screen bg-slate-50 text-slate-800 pb-12">
+            {/* Header */}
+            <header className="bg-white shadow-sm border-b border-slate-200">
+              <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="bg-blue-600 p-2 rounded-lg text-white">
+                    <ScaleIcon size={24} />
+                  </div>
+                  <h1 className="text-xl md:text-2xl font-bold text-slate-900">Heavy Coin Hunt</h1>
+                </div>
+                
+                <div className="flex items-center gap-4 bg-slate-100 p-2 rounded-lg">
+                   <div className="flex items-center gap-2 px-2">
+                      <label htmlFor="coin-input" className="text-sm font-medium text-slate-600">Coins:</label>
+                      <input 
+                          id="coin-input"
+                          type="number" 
+                          min={3} 
+                          max={50} 
+                          value={totalCoins}
+                          onChange={(e) => setTotalCoins(Math.max(3, Math.min(50, parseInt(e.target.value) || 9)))}
+                          className="w-16 px-2 py-1 text-center rounded border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none"
+                          disabled={gameStatus === 'playing' && weighingHistory.length > 0}
+                      />
+                   </div>
+                   <button 
+                      onClick={() => initializeGame(totalCoins)}
+                      className="flex items-center gap-2 px-4 py-1.5 bg-white border border-slate-300 shadow-sm rounded-md text-sm font-medium hover:bg-slate-50 hover:text-blue-600 transition-colors"
+                   >
+                      <RefreshCw size={16} /> Reset
+                   </button>
+                </div>
+              </div>
+            </header>
+
+            <main className="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+              
+              {/* Left Column: Game Area */}
+              <div className="lg:col-span-8 flex flex-col gap-8">
+                  
+                  {/* Instructions / Status */}
+                  <div className={`
+                      p-4 rounded-xl border flex items-start gap-4 transition-colors duration-300
+                      ${gameStatus === 'won' ? 'bg-green-50 border-green-200 text-green-800' : 
+                        gameStatus === 'lost' ? 'bg-red-50 border-red-200 text-red-800' : 
+                        'bg-white border-blue-100 text-slate-600'}
+                  `}>
+                      <div className={`mt-1 ${gameStatus === 'won' ? 'text-green-600' : gameStatus === 'lost' ? 'text-red-600' : 'text-blue-500'}`}>
+                          {gameStatus === 'won' ? <Trophy size={24} /> : gameStatus === 'lost' ? <AlertCircle size={24} /> : <HelpCircle size={24} />}
+                      </div>
+                      <div>
+                          <h3 className="font-bold text-lg mb-1">
+                              {gameStatus === 'won' ? 'Victory!' : gameStatus === 'lost' ? 'Game Over' : 'Mission'}
+                          </h3>
+                          <p>{message}</p>
+                      </div>
+                  </div>
+
+                  {/* Scale Component */}
+                  <div className="relative h-[400px] flex items-center justify-center bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                      {/* Scale Base */}
+                      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-4 h-48 bg-slate-700 rounded-t-sm z-0"></div>
+                      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-32 h-4 bg-slate-800 rounded-full z-0"></div>
+
+                      {/* Rotating Beam Assembly */}
+                      <div 
+                          className="absolute top-[140px] left-1/2 w-[500px] h-0 z-10 transition-transform duration-1000 ease-in-out"
+                          style={{ 
+                              transform: `translateX(-50%) rotate(${scaleState === 'left-heavy' ? -12 : scaleState === 'right-heavy' ? 12 : 0}deg)` 
+                          }}
+                      >
+                          {/* The Beam */}
+                          <div className="w-full h-3 bg-amber-800 rounded-full relative shadow-md">
+                               {/* Center Pivot Point */}
+                              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-slate-300 rounded-full border-4 border-slate-600 z-20"></div>
+
+                              {/* Left Pan Assembly */}
+                              <div className="absolute left-4 top-1/2">
+                                  {/* Chain */}
+                                  <div className="absolute top-0 left-0 w-0.5 h-32 bg-slate-400 origin-top"></div>
+                                  <div className="absolute top-0 right-0 w-0.5 h-32 bg-slate-400 origin-top"></div>
+                                  
+                                  {/* Pan Container - Counter Rotated to stay upright */}
+                                   <div 
+                                      className="absolute top-32 -left-20 w-40 h-40 transition-transform duration-1000 ease-in-out origin-top-center"
+                                      style={{ 
+                                          transform: `rotate(${scaleState === 'left-heavy' ? 12 : scaleState === 'right-heavy' ? -12 : 0}deg)` 
+                                      }}
+                                  >
+                                      {/* The actual visual pan */}
+                                      <div className="absolute top-0 left-0 w-full h-8 border-b-4 border-l-2 border-r-2 border-slate-400 rounded-b-full bg-slate-100/50 backdrop-blur-sm"></div>
+                                      
+                                      {/* Drop Zone for Left Pan */}
+                                      <DropZone 
+                                          onDrop={(e) => handleDrop(e, 'left')} 
+                                          className="relative w-full h-full pt-2 flex flex-wrap content-start justify-center gap-1 z-20"
+                                      >
+                                          {getCoinsAt('left').map(coin => (
+                                              <div key={coin.id} className="scale-75 origin-center">
+                                                  <Coin id={coin.id} onDragStart={handleDragStart} disabled={gameStatus !== 'playing' || isWeighing} />
+                                              </div>
+                                          ))}
+                                          {getCoinsAt('left').length === 0 && (
+                                               <div className="w-full text-center text-xs text-slate-400 mt-4 font-medium pointer-events-none uppercase tracking-wider">Left Pan</div>
+                                          )}
+                                      </DropZone>
+                                  </div>
+                              </div>
+
+                              {/* Right Pan Assembly */}
+                              <div className="absolute right-4 top-1/2">
+                                  {/* Chain */}
+                                  <div className="absolute top-0 left-0 w-0.5 h-32 bg-slate-400 origin-top"></div>
+                                  <div className="absolute top-0 right-0 w-0.5 h-32 bg-slate-400 origin-top"></div>
+                                  
+                                  {/* Pan Container - Counter Rotated */}
+                                   <div 
+                                      className="absolute top-32 -right-20 w-40 h-40 transition-transform duration-1000 ease-in-out origin-top-center"
+                                      style={{ 
+                                          transform: `rotate(${scaleState === 'left-heavy' ? 12 : scaleState === 'right-heavy' ? -12 : 0}deg)` 
+                                      }}
+                                  >
+                                      {/* The actual visual pan */}
+                                      <div className="absolute top-0 left-0 w-full h-8 border-b-4 border-l-2 border-r-2 border-slate-400 rounded-b-full bg-slate-100/50 backdrop-blur-sm"></div>
+                                      
+                                      {/* Drop Zone for Right Pan */}
+                                      <DropZone 
+                                          onDrop={(e) => handleDrop(e, 'right')} 
+                                          className="relative w-full h-full pt-2 flex flex-wrap content-start justify-center gap-1 z-20"
+                                      >
+                                          {getCoinsAt('right').map(coin => (
+                                              <div key={coin.id} className="scale-75 origin-center">
+                                                  <Coin id={coin.id} onDragStart={handleDragStart} disabled={gameStatus !== 'playing' || isWeighing} />
+                                              </div>
+                                          ))}
+                                          {getCoinsAt('right').length === 0 && (
+                                               <div className="w-full text-center text-xs text-slate-400 mt-4 font-medium pointer-events-none uppercase tracking-wider">Right Pan</div>
+                                          )}
+                                      </DropZone>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+                  {/* Controls */}
+                  <div className="flex justify-center gap-4">
+                      <button
+                          onClick={performWeighing}
+                          disabled={isWeighing || gameStatus !== 'playing'}
+                          className={`
+                              flex items-center gap-2 px-8 py-3 rounded-full font-bold shadow-md transition-all
+                              ${isWeighing || gameStatus !== 'playing'
+                                  ? 'bg-slate-200 text-slate-400 cursor-not-allowed' 
+                                  : 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg active:scale-95'}
+                          `}
+                      >
+                          {isWeighing ? 'Thinking...' : 'Weigh Coins'}
+                      </button>
+                      <button
+                          onClick={emptyScales}
+                          disabled={isWeighing || gameStatus !== 'playing'}
+                          className="flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 transition-all disabled:opacity-50"
+                      >
+                          <Trash2 size={18} /> Empty Scales
+                      </button>
+                  </div>
+
+                  {/* Coin Bank */}
+                  <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                      <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Unused Coins (Bank)</h3>
+                      <DropZone 
+                          onDrop={(e) => handleDrop(e, 'bank')} 
+                          className="min-h-[100px] bg-slate-50 rounded-lg border-2 border-dashed border-slate-300 p-4 flex flex-wrap gap-3 items-center"
+                      >
+                          {getCoinsAt('bank').map(coin => (
+                              <Coin key={coin.id} id={coin.id} onDragStart={handleDragStart} disabled={gameStatus !== 'playing' || isWeighing} />
+                          ))}
+                          {getCoinsAt('bank').length === 0 && (
+                              <div className="w-full text-center text-slate-400">Drag coins here to store them</div>
+                          )}
+                      </DropZone>
+                  </div>
+              </div>
+
+              {/* Right Column: Sidebar */}
+              <div className="lg:col-span-4 flex flex-col gap-8">
+                  
+                  {/* Guess Basket */}
+                  <div className="bg-gradient-to-br from-indigo-50 to-white p-6 rounded-xl shadow-sm border border-indigo-100">
+                      <h3 className="font-bold text-indigo-900 mb-2 flex items-center gap-2">
+                          <Trophy size={18} className="text-indigo-500"/> Make Your Guess
+                      </h3>
+                      <p className="text-sm text-indigo-700/70 mb-4">
+                          Drag the coin you believe is heavier into the basket below. <span className="font-bold">This ends the game!</span>
+                      </p>
+                      
+                      <DropZone 
+                          onDrop={(e) => handleDrop(e, 'guess')} 
+                          className={`
+                              h-32 rounded-lg border-2 border-dashed transition-all flex flex-col items-center justify-center gap-2
+                              ${gameStatus === 'playing' ? 'bg-white border-indigo-300 hover:bg-indigo-50 hover:border-indigo-400' : 'bg-slate-100 border-slate-300 opacity-50'}
+                          `}
+                      >
+                          {/* Visual Basket Icon */}
+                          <div className="text-indigo-200">
+                              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m5 11 4-7"/><path d="m19 11-4-7"/><path d="M2 11h20"/><path d="m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8c.9 0 1.8-.7 2-1.6l1.7-7.4"/><path d="m9 11 1 9"/><path d="m4.5 11 1 9"/><path d="m13 11-1 9"/></svg>
+                          </div>
+                          <span className="text-sm font-medium text-indigo-400">Drop Heavy Coin Here</span>
+                      </DropZone>
+                  </div>
+
+                  {/* Weighing History */}
+                  <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex-1 flex flex-col overflow-hidden max-h-[500px]">
+                      <div className="p-4 border-b border-slate-100 bg-slate-50 flex items-center gap-2">
+                          <History size={18} className="text-slate-500" />
+                          <h3 className="font-bold text-slate-700">History</h3>
+                      </div>
+                      
+                      <div className="overflow-y-auto p-2 custom-scrollbar flex-1">
+                          {weighingHistory.length === 0 ? (
+                              <div className="text-center py-8 text-slate-400 text-sm">
+                                  No weighings yet.
+                              </div>
+                          ) : (
+                              <div className="flex flex-col-reverse gap-2">
+                                  {weighingHistory.map((entry) => (
+                                      <div key={entry.id} className="bg-white border border-slate-200 p-3 rounded-lg text-sm flex items-center justify-between shadow-sm">
+                                          <div className="font-mono font-bold text-slate-400">#{entry.id}</div>
+                                          <div className="flex items-center gap-3 flex-1 px-4 justify-center">
+                                              <div className="flex items-center gap-1">
+                                                  <span className="font-bold text-slate-700">{entry.leftCount}</span>
+                                                  <span className="text-xs text-slate-500">coins</span>
+                                              </div>
+                                              
+                                              <div className="px-2 font-bold text-lg text-slate-300">
+                                                  {entry.result === 'balanced' ? '=' : entry.result === 'left-heavy' ? '>' : '<'}
+                                              </div>
+
+                                              <div className="flex items-center gap-1">
+                                                  <span className="font-bold text-slate-700">{entry.rightCount}</span>
+                                                  <span className="text-xs text-slate-500">coins</span>
+                                              </div>
+                                          </div>
+                                          <div className={`
+                                              w-2 h-2 rounded-full 
+                                              ${entry.result === 'balanced' ? 'bg-green-500' : 'bg-amber-500'}
+                                          `}></div>
+                                      </div>
+                                  ))}
+                              </div>
+                          )}
+                      </div>
+                  </div>
+
+              </div>
+            </main>
+          </div>
+        );
+      }
+
+      const root = createRoot(document.getElementById('root'));
+      root.render(<App />);
+    </script>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
