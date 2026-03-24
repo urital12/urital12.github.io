@@ -97,8 +97,7 @@
   <!-- 📸 Carousel -->
   <div id="carouselExample" class="carousel slide mb-5" data-bs-ride="carousel">
     <div class="carousel-inner">
-      <div class="carousel-item active"> <img src="images/gallery/image_77.jpg" class="d-block w-100" alt="..." /> </div>
-      <div class="carousel-item"> <img src="images/gallery/image_1.jpg" class="d-block w-100" alt="..." /> </div>
+      <div class="carousel-item active"> <img src="images/gallery/image_1.jpg" class="d-block w-100" alt="..." /> </div>
       <div class="carousel-item"> <img src="images/gallery/image_10.jpg" class="d-block w-100" alt="..." /> </div>
       <div class="carousel-item"> <img src="images/gallery/image_19.jpg" class="d-block w-100" alt="..." /> </div>
       <div class="carousel-item"> <img src="images/gallery/image_21.jpg" class="d-block w-100" alt="..." /> </div>
@@ -106,13 +105,10 @@
       <div class="carousel-item"> <img src="images/gallery/image_29.jpg" class="d-block w-100" alt="..." /> </div>
       <div class="carousel-item"> <img src="images/gallery/image_58.jpg" class="d-block w-100" alt="..." /> </div>
       <div class="carousel-item"> <img src="images/gallery/image_59.jpg" class="d-block w-100" alt="..." /> </div>
-      <div class="carousel-item"> <img src="images/gallery/image_64.jpg" class="d-block w-100" alt="..." /> </div>
-      <div class="carousel-item"> <img src="images/gallery/image_65.jpg" class="d-block w-100" alt="..." /> </div>
       <div class="carousel-item"> <img src="images/gallery/image_67.jpg" class="d-block w-100" alt="..." /> </div>
       <div class="carousel-item"> <img src="images/gallery/image_71.jpg" class="d-block w-100" alt="..." /> </div>
       <div class="carousel-item"> <img src="images/gallery/image_72.jpg" class="d-block w-100" alt="..." /> </div>
       <div class="carousel-item"> <img src="images/gallery/image_73.jpg" class="d-block w-100" alt="..." /> </div>
-      <div class="carousel-item"> <img src="images/gallery/image_76.jpg" class="d-block w-100" alt="..." /> </div>
     </div>
     <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
       <span class="carousel-control-prev-icon"></span>
@@ -145,12 +141,6 @@
     <div class="row g-3">
       <div class="col-12 col-sm-6 col-md-4">
         <img src="images/gallery/image_80.jpg" class="img-fluid rounded shadow-sm" alt="Gallery image">
-      </div>
-      <div class="col-12 col-sm-6 col-md-4">
-        <img src="images/gallery/image_81.jpg" class="img-fluid rounded shadow-sm" alt="Gallery image">
-      </div>
-      <div class="col-12 col-sm-6 col-md-4">
-        <img src="images/gallery/image_83.jpg" class="img-fluid rounded shadow-sm" alt="Gallery image">
       </div>
       <!-- Repeat as needed -->
     </div>
@@ -225,22 +215,6 @@
     </div>
   </section>
   
-  <section class="mb-5">
-    <div class="row g-3">
-      <div class="col-12 col-sm-6 col-md-4">
-        <img src="images/gallery/image_85.jpg" class="img-fluid rounded shadow-sm" alt="Gallery image">
-      </div>
-      <div class="col-12 col-sm-6 col-md-4">
-        <img src="images/gallery/image_87.jpg" class="img-fluid rounded shadow-sm" alt="Gallery image">
-      </div>
-      <div class="col-12 col-sm-6 col-md-4">
-        <img src="images/gallery/image_88.jpg" class="img-fluid rounded shadow-sm" alt="Gallery image">
-      </div>
-      <!-- Repeat as needed -->
-    </div>
-  </section>
-
-
   <section class="mb-5">
     <h2 class="text-center mb-4">What Parents and Students Are Saying</h2>
     <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -423,9 +397,14 @@
   <script>
     const gallery = document.getElementById("galleryGrid");
     const imageCount = 95; // Adjust this to your number of images
-    const path = "images/gallery"; // Assuming photo1.jpg, photo2.jpg...
-  
+    const path = "images/gallery";
+    const exclude = new Set([
+      6, 7, 47, 48, 52, 53, 54, 56, 60, 61, 63, 64, 65, 66, 69, 70,
+      76, 77, 78, 79, 81, 82, 83, 85, 86, 87, 88, 89, 91, 92, 93, 95,
+    ]);
+
     for (let i = 1; i <= imageCount; i++) {
+      if (exclude.has(i)) continue;
       const img = document.createElement("img");
       img.src = `${path}/image_${i}.jpg`;
       img.alt = `Gallery image ${i}`;
